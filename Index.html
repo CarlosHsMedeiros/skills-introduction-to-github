@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Feliz Aniversário, Carlos!</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="birthdayCanvas"></canvas>
+  <script>
+    const canvas = document.getElementById("birthdayCanvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const message = "FELIZ ANIVERSÁRIO, CARLOS!";
+    const letters = [];
+
+    function Letter(char, x, y) {
+      this.char = char;
+      this.x = x;
+      this.y = y;
+      this.dy = -Math.random() * 4 - 2;
+      this.size = 40;
+      this.color = `hsl(${Math.random() * 360}, 100%, 70%)`;
+      this.alpha = 1;
+    }
+
+    Letter.prototype.update = function () {
+      this.y += this.dy;
+      this.alpha -= 0.01;
+    };
+
+    Letter.prototype.draw = function () {
+      ctx.font = `italic ${this.size}px Arial`; // estilo itálico aplicado aqui
+      ctx.fillStyle = this.color;
+      ctx.globalAlpha = this.alpha;
+      ctx.fillText(this.char, this.x, this.y);
+      ctx.globalAlpha = 1;
+    };
+
+    function spawnMessage() {
+      const startX = canvas.width / 2 - (message.length * 25) / 2;
+      for (let i = 0; i < message.length; i++) {
+        const char = message[i];
+        const x = startX + i * 25;
+        const y = canvas.height;
+        letters.push(new Letter(char, x, y));
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      letters.forEach((letter, index) => {
+        letter.update();
+        letter.draw();
+        if (letter.alpha <= 0) letters.splice(index, 1);
+      });
+      requestAnimationFrame(animate);
+    }
+
+    setInterval(spawnMessage, 3000);
+    animate();
+
+    window.addEventListener("resize", () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  </script>
+</body>
+</html>
